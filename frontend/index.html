@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Carrito de Compras</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Tienda Online</h1>
+        <button id="btn-cerrar-sesion">Cerrar sesión</button>
+    </header>
+
+    <main class="contenedor">
+        <section class="productos">
+            <h2>Productos</h2>
+            <!-- Botones de filtro por categoría -->
+            <nav class="filtros" aria-label="Filtrar productos por categoría">
+                <button class="filtro activo" data-categoria="todos">Todos</button>
+                <button class="filtro" data-categoria="ropa">Ropa</button>
+                <button class="filtro" data-categoria="accesorios">Accesorios</button>
+                <button class="filtro" data-categoria="calzado">Calzado</button>
+            </nav>
+
+            <div id="grid-productos">
+                <!-- Productos se generan aquí -->
+            </div>
+        </section>
+
+        <aside class="carrito" id="panel-carrito">
+            <h2>Tu Carrito</h2>
+            <div id="lista-carrito">
+                <!-- Items del carrito se generan aquí -->
+            </div>
+            <div class="resumen">
+                <p>Subtotal: $<span id="subtotal">0.00</span></p>
+                <p>IVA (16%): $<span id="iva">0.00</span></p>
+                <p class="total">Total: $<span id="total">0.00</span></p>
+                <button id="btn-finalizar">Finalizar Compra</button>
+            </div>
+        </aside>
+    </main>
+
+    <script src="E-commerce.js"></script>
+</body>
+</html>

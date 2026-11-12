@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Iniciar sesión - Tienda Online</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+    <header>
+        <h1>Tienda Online</h1>
+        <!-- <a class="enlace-volver" href="index.html">Volver a la tienda</a> -->
+    </header>
+
+    <main class="contenedor-login">
+        <section class="login">
+            <h2>Iniciar sesión</h2>
+
+            <form id="form-login" novalidate>
+                <div class="campo">
+                    <label for="usuario">Usuario</label>
+                    <input type="text" id="usuario" name="usuario" autocomplete="username" required>
+                </div>
+
+                <div class="campo">
+                    <label for="contrasena">Contraseña</label>
+                    <input type="password" id="contrasena" name="contrasena" autocomplete="current-password" required>
+                </div>
+
+                <p id="mensaje-error" class="mensaje-error" role="alert" hidden></p>
+
+                <button type="submit" id="btn-ingresar">Ingresar</button>
+            </form>
+        </section>
+    </main>
+
+    <script src="login.js">
+    </script>
+</body>
+</html>

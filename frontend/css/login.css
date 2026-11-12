@@ -1,0 +1,208 @@
+/* ==========================================================
+   Login - Estilos (mismo lenguaje visual que style.css)
+   Usa las mismas variables, tipografía, header y botones.
+   ========================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap");
+
+:root {
+    --color-fondo: #f6f5f3;
+    --color-superficie: #ffffff;
+    --color-imagen: #eef0f4;
+    --color-texto: #111111;
+    --color-texto-suave: #8a8a8a;
+    --color-primario: #111111;
+    --color-borde: #e3e1dd;
+    --color-peligro: #b91c1c;
+    --radio: 4px;
+    --fuente: "Outfit", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ---------- Reset base ---------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--fuente);
+    background: var(--color-fondo);
+    color: var(--color-texto);
+    line-height: 1.5;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+button,
+input {
+    font-family: inherit;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: inherit;
+}
+
+/* ---------- Header ---------- */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 40px;
+    background: rgba(246, 245, 243, 0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--color-borde);
+}
+
+header h1 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+.enlace-volver {
+    padding: 9px 18px;
+    border: 1px solid var(--color-primario);
+    border-radius: 999px;
+    color: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+.enlace-volver:hover {
+    background: var(--color-primario);
+    color: #fff;
+}
+
+/* ---------- Layout ---------- */
+.contenedor-login {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 72px 20px 56px;
+}
+
+.login {
+    width: 100%;
+    max-width: 400px;
+    padding: 32px 28px;
+    background: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+}
+
+h2 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+}
+
+/* ---------- Formulario ---------- */
+.campo {
+    margin-bottom: 18px;
+}
+
+.campo label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.campo input {
+    width: 100%;
+    padding: 11px 12px;
+    background: var(--color-fondo);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+    color: var(--color-texto);
+    font-size: 0.95rem;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.campo input:hover {
+    border-color: var(--color-texto-suave);
+}
+
+.campo input:focus {
+    outline: none;
+    background: var(--color-superficie);
+    border-color: var(--color-primario);
+}
+
+.mensaje-error {
+    margin-bottom: 16px;
+    padding: 10px 12px;
+    background: #fee2e2;
+    border-radius: var(--radio);
+    color: var(--color-peligro);
+    font-size: 0.85rem;
+}
+
+.mensaje-error[hidden] {
+    display: none;
+}
+
+#btn-ingresar {
+    width: 100%;
+    margin-top: 6px;
+    padding: 14px;
+    background: var(--color-primario);
+    color: #fff;
+    border-radius: var(--radio);
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: background 0.2s, transform 0.1s;
+}
+
+#btn-ingresar:hover {
+    background: #333;
+}
+
+#btn-ingresar:active {
+    transform: scale(0.98);
+}
+
+/* ---------- Accesibilidad ---------- */
+button:focus-visible,
+.enlace-volver:focus-visible {
+    outline: 2px solid var(--color-primario);
+    outline-offset: 2px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+    header {
+        padding: 14px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.05rem;
+        letter-spacing: 2px;
+    }
+
+    .contenedor-login {
+        padding-top: 40px;
+    }
+
+    .login {
+        padding: 24px 20px;
+    }
+}

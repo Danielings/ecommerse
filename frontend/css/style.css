@@ -1,0 +1,450 @@
+/* ==========================================================
+   Tienda de ropa - Estilos (versión minimalista editorial)
+   Adaptado a la estructura que genera E-commerce.js:
+   Producto  -> .producto > img, h3, p (precio), button.btn-agregar
+   Carrito   -> .item-carrito > h4, p, span.item-cantidad,
+                button.btn-mas, button.btn-menos, button.btn-eliminar
+   ========================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap");
+
+:root {
+    --color-fondo: #f6f5f3;
+    --color-superficie: #ffffff;
+    --color-imagen: #eef0f4;       /* gris azulado del fondo de las fotos */
+    --color-texto: #111111;
+    --color-texto-suave: #8a8a8a;
+    --color-primario: #111111;
+    --color-borde: #e3e1dd;
+    --color-peligro: #b91c1c;
+    --radio: 4px;
+    --fuente: "Outfit", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ---------- Reset base ---------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--fuente);
+    background: var(--color-fondo);
+    color: var(--color-texto);
+    line-height: 1.5;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: inherit;
+}
+
+/* ---------- Header ---------- */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 40px;
+    background: rgba(246, 245, 243, 0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--color-borde);
+}
+
+header h1 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+#btn-cerrar-sesion {
+    padding: 9px 18px;
+    border: 1px solid var(--color-primario);
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s;
+}
+
+#btn-cerrar-sesion:hover {
+    background: var(--color-primario);
+    color: #fff;
+}
+
+/* ---------- Layout principal ---------- */
+.contenedor {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 40px 56px;
+    align-items: start;
+}
+
+h2 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+
+/* ---------- Filtros ---------- */
+.filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 28px;
+}
+
+.filtro {
+    padding: 8px 20px;
+    border: 1px solid var(--color-borde);
+    border-radius: 999px;
+    background: var(--color-superficie);
+    font-size: 0.88rem;
+    font-weight: 400;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.filtro:hover {
+    border-color: var(--color-primario);
+}
+
+.filtro.activo {
+    background: var(--color-primario);
+    border-color: var(--color-primario);
+    color: #fff;
+}
+
+/* ---------- Productos ---------- */
+#grid-productos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 32px 24px;
+}
+
+/* Tarjeta plana: foto arriba, nombre a la izquierda, precio a la
+   derecha y botón al final. Los botones quedan alineados entre
+   tarjetas gracias a la fila central flexible (1fr). */
+.producto {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto 1fr auto;
+    column-gap: 12px;
+    background: transparent;
+}
+
+/* Los filtros usan el atributo hidden para ocultar tarjetas */
+.producto[hidden] {
+    display: none;
+}
+
+.producto img {
+    grid-column: 1 / -1;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    background: var(--color-imagen);
+    border-radius: var(--radio);
+    transition: opacity 0.25s;
+}
+
+.producto:hover img {
+    opacity: 0.92;
+}
+
+.producto h3 {
+    grid-column: 1;
+    align-self: start;
+    margin-top: 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.producto p {
+    grid-column: 2;
+    align-self: start;
+    margin-top: 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* Botón "Agregar": contorno fino, se rellena de negro al pasar el cursor */
+.producto .btn-agregar {
+    grid-column: 1 / -1;
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid var(--color-primario);
+    border-radius: var(--radio);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.producto .btn-agregar:hover {
+    background: var(--color-primario);
+    color: #fff;
+}
+
+/* ---------- Carrito ---------- */
+.carrito {
+    position: sticky;
+    top: 92px;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 120px);
+    padding: 24px;
+    background: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+}
+
+.carrito-cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.btn-cerrar {
+    display: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    padding: 4px 8px;
+}
+
+#lista-carrito {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 16px;
+    padding-right: 4px;
+}
+
+#lista-carrito:empty::before {
+    content: "Tu carrito está vacío";
+    display: block;
+    padding: 32px 0;
+    text-align: center;
+    color: var(--color-texto-suave);
+    font-weight: 300;
+}
+
+/* Cada item: nombre, precio y, en una fila, [-] cantidad [+] ... Eliminar.
+   El JS crea los botones en el orden + / - / Eliminar; "order" los
+   reacomoda visualmente como - cantidad + sin tocar el JS. */
+.item-carrito {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 8px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--color-borde);
+}
+
+.item-carrito h4 {
+    flex-basis: 100%;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.item-carrito p {
+    flex-basis: 100%;
+    font-size: 0.8rem;
+    color: var(--color-texto-suave);
+}
+
+.item-carrito p::before {
+    content: "$";
+}
+
+.btn-menos     { order: 1; }
+.item-cantidad { order: 2; }
+.btn-mas       { order: 3; }
+.btn-eliminar  { order: 4; margin-left: auto; }
+
+.item-cantidad {
+    min-width: 22px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.btn-mas,
+.btn-menos {
+    width: 26px;
+    height: 26px;
+    border: 1px solid var(--color-borde);
+    border-radius: 50%;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.btn-mas:hover,
+.btn-menos:hover {
+    background: var(--color-primario);
+    border-color: var(--color-primario);
+    color: #fff;
+}
+
+.btn-eliminar {
+    padding: 4px 8px;
+    border-radius: var(--radio);
+    color: var(--color-texto-suave);
+    font-size: 0.8rem;
+    transition: color 0.2s, background 0.2s;
+}
+
+.btn-eliminar:hover {
+    color: var(--color-peligro);
+    background: #fee2e2;
+}
+
+/* ---------- Resumen ---------- */
+.resumen {
+    padding-top: 16px;
+    border-top: 1px solid var(--color-borde);
+}
+
+.resumen p {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: var(--color-texto-suave);
+}
+
+.resumen .total {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--color-borde);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--color-texto);
+}
+
+#btn-finalizar {
+    width: 100%;
+    margin-top: 16px;
+    padding: 14px;
+    background: var(--color-primario);
+    color: #fff;
+    border-radius: var(--radio);
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: background 0.2s, transform 0.1s;
+}
+
+#btn-finalizar:hover {
+    background: #333;
+}
+
+#btn-finalizar:active {
+    transform: scale(0.98);
+}
+
+#btn-finalizar:disabled {
+    background: var(--color-borde);
+    color: var(--color-texto-suave);
+    cursor: not-allowed;
+}
+
+/* ---------- Accesibilidad ---------- */
+button:focus-visible {
+    outline: 2px solid var(--color-primario);
+    outline-offset: 2px;
+}
+
+/* ---------- Fondo oscuro tras el panel (móvil) ---------- */
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    background: rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+    header {
+        padding: 14px 20px;
+    }
+
+    .contenedor {
+        grid-template-columns: 1fr;
+        padding: 20px;
+    }
+
+    /* El carrito se vuelve un panel lateral deslizable. */
+    .carrito {
+        position: fixed;
+        top: 0;
+        right: 0;
+        z-index: 100;
+        width: min(380px, 100%);
+        height: 100vh;
+        max-height: 100vh;
+        border: none;
+        border-radius: 0;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        box-shadow: -8px 0 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .carrito.abierto {
+        transform: translateX(0);
+    }
+
+    .btn-cerrar {
+        display: block;
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.05rem;
+        letter-spacing: 2px;
+    }
+
+    #grid-productos {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px 14px;
+    }
+
+    .filtros {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+
+    .filtro {
+        flex-shrink: 0;
+    }
+}
