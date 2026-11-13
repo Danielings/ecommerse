@@ -3,26 +3,36 @@ let user = document.getElementById("usuario");
 let password = document.getElementById("contrasena");
 let mensaje = document.getElementById("mensaje-error");
 
-let usuariosRegistrados = [
-  { usuario: "admin", password: "1234", nombre: "Administrador" },
-  { usuario: "cliente", password: "abcd", nombre: "Juan Pérez" },
-  { usuario: "cliente2", password: "12345", nombre: "Jose Lujan" },
-];
-
-form.addEventListener("submit", function (e) {
+form.addEventListener("submit", async function (e) {
   e.preventDefault();
 
-  let usuario = usuariosRegistrados.find(
-    (item) => item.usuario === user.value && item.password === password.value,
-  );
+  const datosLogin = {
+    email: user.value,
+    password: password.value,
+  };
 
-  if (usuario) {
-    localStorage.setItem("usuarioLogeado", usuario.usuario);
-    window.location.href = "index.html";
-  } else {
-    mensaje.removeAttribute("hidden");
-    mensaje.textContent = "Credenciales Invalidas";
-    user.value = "";
-    password.value = "";
+  try {
+    const respuesta = await fetch("http://localhost:3000/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(datosLogin),
+    });
+
+    if (respuesta.ok) {
+      const datos = await respuesta.json();
+      localStorage.setItem("token", datos.token);
+      localStorage.setItem("usuario", JSON.stringify(datos.usuario));
+      window.location.href = "index.html";
+    } else {
+      const error = await respuesta.json();
+      mensaje.removeAttribute("hidden");
+      mensaje.textContent = error.mensaje;
+      user.value = "";
+      password.value = "";
+    }
+  } catch (error) {
+    console.error("error al inisiar sesion", error);
   }
 });
