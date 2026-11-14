@@ -1,112 +1,18 @@
-const productos = [
-  {
-    id: 1,
-    nombre: "Camiseta Básica",
-    precio: 299,
-    categoria: "ropa",
-    imagen:
-      "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=500&q=80",
-  },
-  {
-    id: 2,
-    nombre: "Zapatillas Deportivas",
-    precio: 899,
-    categoria: "calzado",
-    imagen:
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=500&q=80",
-  },
-  {
-    id: 3,
-    nombre: "Pantalón Vaquero",
-    precio: 599,
-    categoria: "ropa",
-    imagen:
-      "https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=500&q=80",
-  },
-  {
-    id: 4,
-    nombre: "Chaqueta de Cuero",
-    precio: 1499,
-    categoria: "ropa",
-    imagen:
-      "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=500&q=80",
-  },
-  {
-    id: 5,
-    nombre: "Gorra Casual",
-    precio: 199,
-    categoria: "accesorios",
-    imagen:
-      "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=500&q=80",
-  },
-  {
-    id: 6,
-    nombre: "Mochila Urbana",
-    precio: 699,
-    categoria: "accesorios",
-    imagen:
-      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=500&q=80",
-  },
-  {
-    id: 7,
-    nombre: "Reloj Minimalista",
-    precio: 1299,
-    categoria: "accesorios",
-    imagen:
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=500&q=80",
-  },
-  {
-    id: 8,
-    nombre: "Gafas de Sol",
-    precio: 450,
-    categoria: "accesorios",
-    imagen:
-      "https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=500&q=80",
-  },
-  {
-    id: 9,
-    nombre: "Sudadera con Capucha",
-    precio: 799,
-    categoria: "ropa",
-    imagen:
-      "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=500&q=80",
-  },
-  {
-    id: 10,
-    nombre: "Botas de Invierno",
-    precio: 1199,
-    categoria: "calzado",
-    imagen:
-      "https://images.unsplash.com/photo-1608256246200-53e635b5b65f?auto=format&fit=crop&w=500&q=80",
-  },
-  {
-    id: 11,
-    nombre: "Cinturón de Cuero",
-    precio: 250,
-    categoria: "accesorios",
-    imagen:
-      "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=500&q=80",
-  },
-  {
-    id: 12,
-    nombre: "Bufanda de Lana",
-    precio: 320,
-    categoria: "accesorios",
-    imagen:
-      "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?auto=format&fit=crop&w=500&q=80",
-  },
-];
-
 function guardiaSeguridad() {
-  let usuario = localStorage.getItem("usuarioLogeado");
-  if (usuario === null) {
+  let usuarioLogeado = localStorage.getItem("usuario");
+  if (usuarioLogeado === null) {
     window.location.href = "login.html";
+    return;
   }
+
+  const usuarioObjeto = JSON.parse(usuarioLogeado);
 }
 
-guardiaSeguridad();
-
+const token = localStorage.getItem("token");
 let carrito = [];
+let productos = [];
+
+guardiaSeguridad();
 
 let gridProductos = document.getElementById("grid-productos");
 let gridCarrito = document.getElementById("lista-carrito");
@@ -117,6 +23,21 @@ let total = document.getElementById("total");
 let categoriaActual = "todos";
 let filtro = document.querySelector(".filtros");
 let btnSesion = document.getElementById("btn-cerrar-sesion");
+
+async function cargarProductos() {
+  try {
+    const respuesta = await fetch("http://localhost:3000/api/productos");
+    if (respuesta.ok) {
+      productos = await respuesta.json();
+      renderizarProductos();
+      cargarCarrito();
+    } else {
+      console.error("error al obtener los productos");
+    }
+  } catch (error) {
+    console.error("error de red ", error);
+  }
+}
 
 btnSesion.addEventListener("click", function () {
   localStorage.clear();
@@ -130,7 +51,7 @@ filtro.addEventListener("click", function (e) {
     filtroActivo.forEach((item) => item.classList.remove("activo"));
     e.target.classList.add("activo");
     categoriaActual = filtroClick;
-    renderizarProductos();
+    cargarProductos();
   }
 });
 
@@ -148,7 +69,7 @@ function renderizarProductos() {
     boton.dataset.idProducto = productosAMostrar[i].id;
     divProduct.classList.add("producto");
 
-    img.src = productosAMostrar[i].imagen;
+    img.src = productosAMostrar[i].img;
     name.textContent = productosAMostrar[i].nombre;
     price.textContent = `${productosAMostrar[i].precio}$`;
     boton.textContent = "Agregar";
@@ -162,8 +83,6 @@ function renderizarProductos() {
     gridProductos.appendChild(divProduct);
   }
 }
-
-renderizarProductos();
 
 function agregarCarrito(idProducto) {
   let itemCarrito = carrito.find((item) => item.id === idProducto);
@@ -293,15 +212,26 @@ function cargarCarrito() {
   renderizarCarrito();
 }
 
-btn.addEventListener("click", function () {
-  if (carrito.length === 0) {
-    alert("No hay productos para procesar la venta");
-  } else {
-    alert("Compra finalizada");
-    carrito = [];
-    localStorage.setItem("carrito", JSON.stringify(carrito));
-    renderizarCarrito();
+btn.addEventListener("click", async function () {
+  try {
+    const respuesta = await fetch("http://localhost:3000/api/ventas", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ carrito: carrito }),
+    });
+
+    if (respuesta.ok) {
+      alert("venta exitosa");
+      carrito = [];
+      localStorage.setItem("carrito", JSON.stringify(carrito));
+      renderizarCarrito();
+    }
+  } catch (error) {
+    console.error("error al procesar venta", error);
   }
 });
 
-cargarCarrito();
+cargarProductos();

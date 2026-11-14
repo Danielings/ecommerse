@@ -1,0 +1,249 @@
+/* ==========================================================
+   Dashboard de Administrador - Estilos (minimalista editorial)
+   Mismos tokens, tipografía, header y botones que style.css
+   ========================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap");
+
+:root {
+    --color-fondo: #f6f5f3;
+    --color-superficie: #ffffff;
+    --color-imagen: #eef0f4;
+    --color-texto: #111111;
+    --color-texto-suave: #8a8a8a;
+    --color-primario: #111111;
+    --color-borde: #e3e1dd;
+    --color-peligro: #b91c1c;
+    --radio: 4px;
+    --fuente: "Outfit", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ---------- Reset base ---------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--fuente);
+    background: var(--color-fondo);
+    color: var(--color-texto);
+    line-height: 1.5;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: inherit;
+}
+
+/* ---------- Header ---------- */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 40px;
+    background: rgba(246, 245, 243, 0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--color-borde);
+}
+
+header h1 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+.acciones-header {
+    display: flex;
+    gap: 10px;
+}
+
+#btn-cerrar-sesion,
+#btn-tienda {
+    padding: 9px 18px;
+    border: 1px solid var(--color-primario);
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s;
+}
+
+#btn-cerrar-sesion:hover,
+#btn-tienda:hover {
+    background: var(--color-primario);
+    color: #fff;
+}
+
+/* ---------- Layout principal ---------- */
+.contenedor-admin {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 40px 56px;
+}
+
+/* ---------- Métricas ---------- */
+.metricas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+}
+
+.metrica {
+    padding: 28px 24px;
+    background: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+}
+
+.metrica-etiqueta {
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--color-texto-suave);
+}
+
+/* Los h2 de las métricas muestran la cifra en grande */
+.metrica h2 {
+    font-size: 2.4rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+    line-height: 1.1;
+    margin-bottom: 0;
+}
+
+/* ---------- Órdenes ---------- */
+h2 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+
+.ordenes {
+    margin-top: 48px;
+}
+
+#lista-ordenes {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+#lista-ordenes:empty::before {
+    content: "Aún no hay órdenes";
+    display: block;
+    padding: 32px 0;
+    text-align: center;
+    color: var(--color-texto-suave);
+    font-weight: 300;
+}
+
+/* Cada orden es un div.orden con tres span hijos, en este orden:
+   1) fecha   2) total   3) cantidad de productos
+   Se estilan por posición, así no necesitas agregar clases en JS. */
+.orden {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: baseline;
+    gap: 8px 32px;
+    padding: 20px 24px;
+    background: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+}
+
+/* 1) Fecha */
+.orden span:nth-child(1) {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* 2) Total */
+.orden span:nth-child(2) {
+    grid-column: 3;
+    grid-row: 1;
+    font-size: 1.15rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.orden span:nth-child(2)::before {
+    content: "$";
+}
+
+/* 3) Cantidad de productos */
+.orden span:nth-child(3) {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: var(--color-texto-suave);
+    white-space: nowrap;
+}
+
+.orden span:nth-child(3)::before {
+    content: "Productos: ";
+}
+
+@media (max-width: 480px) {
+    .orden {
+        grid-template-columns: 1fr auto;
+    }
+
+    .orden span:nth-child(2) {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .orden span:nth-child(3) {
+        grid-column: 1 / -1;
+        grid-row: 2;
+    }
+}
+
+/* ---------- Accesibilidad ---------- */
+button:focus-visible {
+    outline: 2px solid var(--color-primario);
+    outline-offset: 2px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+    header {
+        padding: 14px 20px;
+    }
+
+    .contenedor-admin {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        flex-wrap: wrap;
+    }
+
+    header h1 {
+        font-size: 1.05rem;
+        letter-spacing: 2px;
+    }
+
+    .metrica h2 {
+        font-size: 2rem;
+    }
+}

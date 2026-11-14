@@ -79,6 +79,120 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
+app.post("/api/ventas", async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ mensaje: "No autorizado" });
+
+  try {
+    const datosUsuario = jwt.verify(token, process.env.JWT_SECRET);
+    let subtotal = 0;
+    const detallesCalculados = [];
+    const { carrito } = req.body;
+    const sql =
+      "INSERT INTO ventas (usuario_id,total,detalle,fecha) VALUES (?,?,?,NOW( ))";
+
+    if (!Array.isArray(carrito) || !carrito || carrito.length === 0)
+      return res
+        .status(400)
+        .json({ mensaje: "Carrito es invalido o esta vacio" });
+
+    const idsProductos = carrito.map((item) => item.id);
+    const sqlProduct =
+      "SELECT id, nombre, precio FROM productos WHERE id IN (?)";
+    const [productosEncontrados] = await conexionBD.query(sqlProduct, [
+      idsProductos,
+    ]);
+
+    for (const item of carrito) {
+      if (item.cantidad <= 0)
+        return res
+          .status(400)
+          .json({ mensaje: `Cantidad invalida para el producto ${item.id}` });
+
+      const productosDB = productosEncontrados.find((p) => p.id === item.id);
+
+      if (!productosDB)
+        return res
+          .status(400)
+          .json({ mensaje: `Producto ${item.id} no existe` });
+
+      const precioReal = productosDB.precio;
+      subtotal += precioReal * item.cantidad;
+
+      detallesCalculados.push({
+        id: productosDB.id,
+        nombre: productosDB.nombre,
+        precio: precioReal,
+        cantidad: item.cantidad,
+      });
+    }
+
+    const iva = subtotal * 0.16;
+    const total = subtotal + iva;
+
+    const valores = [
+      datosUsuario.id,
+      total,
+      JSON.stringify(detallesCalculados),
+    ];
+    const [fila] = await conexionBD.query(sql, valores);
+
+    res
+      .status(200)
+      .json({ mensaje: "Venta registrada con exito", total: total });
+  } catch (error) {
+    console.error("Error al procesar la venta:", error);
+    res.status(403).json({ mensaje: "Token invalido o expirado" });
+  }
+});
+
+//Obtener Productos
+app.get("/api/productos", async (req, res) => {
+  try {
+    const sql = "SELECT id,nombre,precio,categoria, img FROM productos";
+    const [filas] = await conexionBD.query(sql);
+
+    res.status(200).json(filas);
+  } catch (error) {
+    console.error("error al obtener los productos", error);
+    res.status(500).json({ mensaje: "Error interno del servidor" });
+  }
+});
+
+// Reporte de ventas
+app.get("/api/admin/reportes", async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ mensaje: "No autorizado" });
+
+  try {
+    const datosUsuario = jwt.verify(token, process.env.JWT_SECRET);
+    if (datosUsuario.rol !== "admin")
+      return res.status(403).json({ mensaje: "Acceso Denegado" });
+
+    const sqlMetricas = `
+      SELECT 
+        COALESCE(SUM(total), 0) AS total_ventas, 
+        COUNT(*) AS cantidad_ventas 
+      FROM ventas 
+      WHERE DATE(fecha) = CURDATE()
+    `;
+    const [metricas] = await conexionBD.query(sqlMetricas);
+
+    const sqlOrdenes = `
+      SELECT id, total, detalle, fecha 
+      FROM ventas 
+      WHERE DATE(fecha) = CURDATE() 
+      ORDER BY fecha DESC
+    `;
+    const [ordenes] = await conexionBD.query(sqlOrdenes);
+
+    res.status(200).json({ metricas: metricas[0], ordenes: ordenes });
+  } catch (error) {
+    console.error("error al obtener los reportes ", error);
+    res.status(500).json({ mensaje: "Error interno del servidor" });
+  }
+});
+
 app.listen(PUERTO, () => {
   console.log(`Servidor corriendo en http://localhost:${PUERTO}`);
 });

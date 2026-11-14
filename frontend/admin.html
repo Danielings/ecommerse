@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard de Administrador</title>
+    <link rel="stylesheet" href="/frontend/css/admin.css">
+
+</head>
+<body>
+
+    <header>
+        <h1>Dashboard de Administrador</h1>
+        <div class="acciones-header">
+            <!-- <button id="btn-tienda">Ir a la tienda</button> -->
+            <button id="btn-cerrar-sesion">Cerrar sesión</button>
+        </div>
+    </header>
+
+    <main class="contenedor-admin">
+        <section class="metricas" aria-label="Resumen de ventas">
+            <article class="metrica">
+                <p class="metrica-etiqueta">Ganancias totales</p>
+                <h2 id="ganancias-totales">$0.00</h2>
+            </article>
+
+            <article class="metrica">
+                <p class="metrica-etiqueta">Cantidad de ventas</p>
+                <h2 id="cantidad-ventas">0</h2>
+            </article>
+        </section>
+
+        <section class="ordenes">
+            <h2>Órdenes</h2>
+            <div id="lista-ordenes">
+                <!-- Las órdenes se generan aquí con JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <script src="/frontend/js/admin.js">
+    </script>
+
+</body>
+</html>

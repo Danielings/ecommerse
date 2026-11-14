@@ -24,7 +24,11 @@ form.addEventListener("submit", async function (e) {
       const datos = await respuesta.json();
       localStorage.setItem("token", datos.token);
       localStorage.setItem("usuario", JSON.stringify(datos.usuario));
-      window.location.href = "index.html";
+      if (datos.usuario.rol === "admin") {
+        window.location.href = "admin.html";
+      } else {
+        window.location.href = "index.html";
+      }
     } else {
       const error = await respuesta.json();
       mensaje.removeAttribute("hidden");
