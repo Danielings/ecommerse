@@ -9,7 +9,15 @@
 
     <header>
         <h1>Tienda Online</h1>
-        <button id="btn-cerrar-sesion">Cerrar sesión</button>
+        <div class="menu">
+            <button id="menu-toggle" class="menu-toggle" aria-label="Abrir menú" aria-haspopup="true" aria-expanded="false" aria-controls="menu-lista">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+            </button>
+            <div id="menu-lista" class="menu-lista" hidden>
+                <a href="/frontend/perfil.html">Perfil</a>
+                <button id="btn-cerrar-sesion">Cerrar sesión</button>
+            </div>
+        </div>
     </header>
 
     <main class="contenedor">
@@ -42,6 +50,7 @@
         </aside>
     </main>
 
+    <script src="/frontend/js/menu.js"></script>
     <script src="/frontend/js/E-commerce.js"></script>
 </body>
 </html>

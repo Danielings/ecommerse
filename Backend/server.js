@@ -193,6 +193,32 @@ app.get("/api/admin/reportes", async (req, res) => {
   }
 });
 
+//Obtener las compras de clientes
+app.get("/api/cliente/mis-compras", async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ mensaje: "No autorizado" });
+
+  try {
+    const datosUsuario = jwt.verify(token, process.env.JWT_SECRET);
+    const usuario_id = datosUsuario.id;
+
+    const sqlOrdenes =
+      "SELECT id, total, detalle, fecha FROM ventas WHERE usuario_id = ?";
+    const [ordenes] = await conexionBD.query(sqlOrdenes, [usuario_id]);
+
+    const sqlTotal =
+      "SELECT SUM(total) AS total_compras FROM ventas WHERE usuario_id = ?";
+
+    const [totalCompras] = await conexionBD.query(sqlTotal, [usuario_id]);
+    const totalGastado = totalCompras[0].total_compras || 0;
+
+    res.status(200).json({ ordenes: ordenes, totalGastado: totalGastado });
+  } catch (error) {
+    console.error("error al obtener las ordenes ", error);
+    res.status(500).json({ mensaje: "Error del servidor" });
+  }
+});
+
 app.listen(PUERTO, () => {
   console.log(`Servidor corriendo en http://localhost:${PUERTO}`);
 });

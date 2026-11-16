@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mi Perfil</title>
+    <link rel="stylesheet" href="/frontend/css/style.css">
+    <link rel="stylesheet" href="/frontend/css/perfil.css">
+</head>
+<body>
+
+    <header>
+        <h1>Tienda Online</h1>
+        <div class="menu">
+            <button id="menu-toggle" class="menu-toggle" aria-label="Abrir menú" aria-haspopup="true" aria-expanded="false" aria-controls="menu-lista">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+            </button>
+            <div id="menu-lista" class="menu-lista" hidden>
+                <a href="/frontend/index.html">Tienda</a>
+                <button id="btn-cerrar-sesion">Cerrar sesión</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="perfil">
+        <section class="perfil-resumen">
+            <h2>Mi Perfil</h2>
+            <h2 class="total-gastado">Total Gastado: $<span id="total-gastado">0</span></h2>
+        </section>
+
+        <section class="perfil-compras">
+            <h2>Mis Compras</h2>
+            <div id="lista-mis-compras"></div>
+        </section>
+    </main>
+
+    <script src="/frontend/js/menu.js"></script>
+    <script src="/frontend/js/perfil.js"></script>
+</body>
+</html>
