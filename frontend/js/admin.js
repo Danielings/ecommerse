@@ -21,6 +21,8 @@ const listaOrdenes = document.getElementById("lista-ordenes");
 const gananciasTotales = document.getElementById("ganancias-totales");
 const totalVentas = document.getElementById("cantidad-ventas");
 const btnSalir = document.getElementById("btn-cerrar-sesion");
+const btnDescargarPDF = document.getElementById("btn-descargar-pdf");
+const ordenes = [];
 
 async function cargarReportes() {
   try {
@@ -33,6 +35,7 @@ async function cargarReportes() {
 
     if (respuesta.ok) {
       const datos = await respuesta.json();
+      ordenes.push(...datos.ordenes);
       gananciasTotales.textContent = `$${datos.metricas.total_ventas}`;
       totalVentas.textContent = datos.metricas.cantidad_ventas;
 
@@ -73,3 +76,30 @@ btnSalir.addEventListener("click", function () {
 });
 
 cargarReportes();
+
+btnDescargarPDF.addEventListener("click", function () {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  const cuerpoTabla = ordenes.map((orden) => {
+    const fecha = new Date(orden.fecha).toLocaleDateString();
+    const total = orden.total;
+    const detalles = JSON.parse(orden.detalle);
+    const totalProductos = detalles.reduce(
+      (acumlador, item) => acumlador + item.cantidad,
+      0,
+    );
+
+    return [fecha, total, totalProductos];
+  });
+
+  doc.text("Ordenes", 14, 20);
+
+  doc.autoTable({
+    startY: 30,
+    head: [["Fecha", "total", "Productos"]],
+    body: cuerpoTabla,
+  });
+
+  doc.save("Ordenes.pdf");
+});
