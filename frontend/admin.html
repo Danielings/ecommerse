@@ -11,9 +11,15 @@
 
     <header>
         <h1>Dashboard de Administrador</h1>
-        <div class="acciones-header">
-            <!-- <button id="btn-tienda">Ir a la tienda</button> -->
-            <button id="btn-cerrar-sesion">Cerrar sesión</button>
+        <div class="menu">
+            <button id="menu-toggle" class="menu-toggle" aria-label="Abrir menú" aria-haspopup="true" aria-expanded="false" aria-controls="menu-lista">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+            </button>
+            <div id="menu-lista" class="menu-lista" hidden>
+                <a href="admin.html" aria-current="page">Dashboard</a>
+                <a href="admin-productos.html">Productos</a>
+                <button id="btn-cerrar-sesion">Cerrar sesión</button>
+            </div>
         </div>
     </header>
 
@@ -41,6 +47,7 @@
         </section>
     </main>
 
+    <script src="/frontend/js/menu.js"></script>
     <script src="/frontend/js/admin.js">
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>

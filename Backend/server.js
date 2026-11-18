@@ -146,6 +146,35 @@ app.post("/api/ventas", async (req, res) => {
   }
 });
 
+//crear productos
+app.post("/api/admin/productos", async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ mensaje: "No autorizado" });
+
+  try {
+    const datosUsuario = jwt.verify(token, process.env.JWT_SECRET);
+    if (datosUsuario.rol !== "admin")
+      return res
+        .status(403)
+        .json({ mensaje: "No tienes los permisos necesarios" });
+
+    const { nombre, precio, categoria, img } = req.body;
+    if (!nombre || !precio)
+      return res.status(400).json({ mensaje: "Error en los datos ingresados" });
+
+    const sql =
+      "INSERT INTO productos (nombre,precio,categoria,img) VALUES (?,?,?,?)";
+    const valores = [nombre, precio, categoria, img];
+
+    const [filas] = await conexionBD.query(sql, valores);
+
+    res.status(201).json({ mensaje: "Producto creado con exito" });
+  } catch (error) {
+    console.error("error al crear el producto ", error);
+    res.status(500).json({ mensaje: "Error interno del servidor" });
+  }
+});
+
 //Obtener Productos
 app.get("/api/productos", async (req, res) => {
   try {
@@ -155,6 +184,60 @@ app.get("/api/productos", async (req, res) => {
     res.status(200).json(filas);
   } catch (error) {
     console.error("error al obtener los productos", error);
+    res.status(500).json({ mensaje: "Error interno del servidor" });
+  }
+});
+
+//Actualizar Productos
+app.put("/api/admin/productos/:id", async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ mensaje: "No autorizado" });
+
+  try {
+    const datosUsuario = jwt.verify(token, process.env.JWT_SECRET);
+    if (datosUsuario.rol !== "admin")
+      return res
+        .status(403)
+        .json({ mensaje: "No tienes los permisos necesarios" });
+
+    const { nombre, precio, categoria, img } = req.body;
+    const sql =
+      "UPDATE productos SET nombre = ?, precio = ?, categoria = ?, img = ? WHERE id = ?";
+    const idProducto = req.params.id;
+    const valores = [nombre, precio, categoria, img, idProducto];
+
+    const [filas] = await conexionBD.query(sql, valores);
+
+    res.status(200).json({ mensaje: "Producto actualizado con exito" });
+  } catch (error) {
+    console.error("error al actualizar el producto", error);
+    res.status(500).json({ mensaje: "Error interno del servidor" });
+  }
+});
+
+//Eliminar Producto
+app.delete("/api/admin/productos/:id", async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ mensaje: "No autorizado" });
+
+  try {
+    const datosUsuario = jwt.verify(token, process.env.JWT_SECRET);
+    if (datosUsuario.rol !== "admin")
+      return res
+        .status(403)
+        .json({ mensaje: "No tienes los permisos necesarios" });
+
+    const sql = "DELETE FROM productos WHERE id =?";
+    const idProducto = req.params.id;
+
+    const [filas] = await conexionBD.query(sql, [idProducto]);
+
+    if (filas.affectedRows === 0)
+      return res.status(404).json({ mensaje: "El producto no existe" });
+
+    res.status(200).json({ mensaje: "Producto eliminado con exito" });
+  } catch (error) {
+    console.error("Error al eliminar el producto", error);
     res.status(500).json({ mensaje: "Error interno del servidor" });
   }
 });

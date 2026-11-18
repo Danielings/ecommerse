@@ -1,0 +1,269 @@
+.productos {
+    margin-top: 0;
+}
+
+/* ---------- Botón agregar (+) ---------- */
+.encabezado-seccion {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.btn-agregar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    background: var(--color-primario);
+    color: #fff;
+    border: 1px solid var(--color-primario);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.btn-agregar svg {
+    width: 20px;
+    height: 20px;
+}
+
+.btn-agregar:hover {
+    background: #333;
+}
+
+.btn-agregar:active {
+    transform: scale(0.95);
+}
+
+.btn-agregar:focus-visible {
+    outline: 2px solid var(--color-primario);
+    outline-offset: 2px;
+}
+
+/* ---------- Tabla ---------- */
+.tabla-contenedor {
+    overflow-x: auto;
+    background: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+}
+
+.tabla-productos {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.tabla-productos th,
+.tabla-productos td {
+    padding: 14px 20px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--color-borde);
+}
+
+.tabla-productos thead th {
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--color-texto-suave);
+    background: var(--color-fondo);
+}
+
+.tabla-productos tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.tabla-productos tbody tr:hover {
+    background: #fafaf9;
+}
+
+/* Se estilan por posición, así no necesitas agregar clases en JS */
+/* 1) Nombre */
+.tabla-productos td:nth-child(1) {
+    font-weight: 500;
+}
+
+/* 2) Precio */
+.tabla-productos td:nth-child(2) {
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+.tabla-productos td:nth-child(2)::before {
+    content: "$";
+}
+
+/* 3) Categoría */
+.tabla-productos td:nth-child(3) {
+    color: var(--color-texto-suave);
+}
+
+/* 4) Imagen */
+.tabla-productos td:nth-child(4) img {
+    display: block;
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    background: var(--color-imagen);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+}
+
+/* 5) Acciones */
+.tabla-productos td:nth-child(5) {
+    white-space: nowrap;
+}
+
+.tabla-productos th:nth-child(5) {
+    text-align: right;
+}
+
+.tabla-productos td:nth-child(5) {
+    text-align: right;
+}
+
+/* ---------- Botones de acción ---------- */
+.btn-editar,
+.btn-eliminar {
+    padding: 7px 14px;
+    margin-left: 6px;
+    border: 1px solid var(--color-primario);
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.btn-editar:hover {
+    background: var(--color-primario);
+    color: #fff;
+}
+
+.btn-eliminar {
+    color: var(--color-peligro);
+    border-color: var(--color-peligro);
+}
+
+.btn-eliminar:hover {
+    background: var(--color-peligro);
+    color: #fff;
+}
+
+/* ---------- Diálogo de edición ---------- */
+.dialogo {
+    width: min(440px, calc(100% - 32px));
+    margin: auto;
+    padding: 28px;
+    background: var(--color-superficie);
+    color: var(--color-texto);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
+}
+
+.dialogo::backdrop {
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.dialogo h2 {
+    margin-bottom: 20px;
+}
+
+.dialogo label {
+    display: block;
+    margin: 14px 0 6px;
+    font-size: 0.85rem;
+    color: var(--color-texto-suave);
+}
+
+.dialogo input,
+.dialogo select {
+    width: 100%;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: var(--color-texto);
+    background: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+}
+
+.dialogo input:focus,
+.dialogo select:focus {
+    outline: 2px solid var(--color-primario);
+    outline-offset: 1px;
+    border-color: var(--color-primario);
+}
+
+.vista-previa {
+    display: block;
+    width: 96px;
+    height: 96px;
+    margin-top: 12px;
+    object-fit: cover;
+    background: var(--color-imagen);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+}
+
+.dialogo .error {
+    margin-top: 14px;
+    font-size: 0.85rem;
+    color: var(--color-peligro);
+}
+
+.dialogo .error[hidden] {
+    display: none;
+}
+
+.dialogo-acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.btn-secundario,
+.btn-principal {
+    padding: 9px 18px;
+    border: 1px solid var(--color-primario);
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-secundario:hover {
+    background: var(--color-fondo);
+}
+
+.btn-principal {
+    background: var(--color-primario);
+    color: #fff;
+}
+
+.btn-principal:hover {
+    background: #333;
+}
+
+.btn-principal:disabled {
+    background: var(--color-borde);
+    border-color: var(--color-borde);
+    color: var(--color-texto-suave);
+    cursor: not-allowed;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+    .tabla-productos th,
+    .tabla-productos td {
+        padding: 12px 14px;
+    }
+}   

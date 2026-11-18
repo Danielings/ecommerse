@@ -269,3 +269,85 @@ button:focus-visible {
         font-size: 2rem;
     }
 }
+
+/* ---------- Menú de puntos verticales (igual que la tienda) ---------- */
+.menu {
+    position: relative;
+}
+
+.menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--color-primario);
+    border-radius: 50%;
+    transition: background 0.2s, color 0.2s;
+}
+
+.menu-toggle:hover,
+.menu-toggle[aria-expanded="true"] {
+    background: var(--color-primario);
+    color: #fff;
+}
+
+.menu-toggle svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+.menu-lista {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 120;
+    min-width: 180px;
+    padding: 6px;
+    background: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.menu-lista[hidden] {
+    display: none;
+}
+
+.menu-lista a,
+.menu-lista button {
+    display: block;
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: var(--radio);
+    font-size: 0.9rem;
+    font-weight: 400;
+    text-align: left;
+    text-decoration: none;
+    color: var(--color-texto);
+    transition: background 0.2s;
+}
+
+.menu-lista a:hover,
+.menu-lista button:hover {
+    background: var(--color-fondo);
+}
+
+.menu-lista a[aria-current="page"] {
+    font-weight: 600;
+}
+
+/* El botón de cerrar sesión vive dentro del menú:
+   se anula el estilo de píldora que tenía en el header. */
+.menu-lista #btn-cerrar-sesion {
+    border: none;
+    border-radius: var(--radio);
+    padding: 10px 14px;
+    font-weight: 400;
+}
+
+.menu-lista #btn-cerrar-sesion:hover {
+    background: #fee2e2;
+    color: var(--color-peligro);
+}
