@@ -1,0 +1,198 @@
+.billetera {
+    display: grid;
+    gap: 32px;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px 24px 56px;
+}
+
+/* ---------- Saldo: lo más grande de la pantalla ---------- */
+.billetera-saldo {
+    padding: 36px 32px;
+    background: var(--color-primario);
+    color: #fff;
+    border-radius: var(--radio);
+}
+
+.saldo-etiqueta {
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+#saldo-actual {
+    margin: 0;
+    font-size: clamp(2.6rem, 9vw, 4rem);
+    font-weight: 300;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    text-transform: none;
+}
+
+/* ---------- Formulario de recarga ---------- */
+.billetera-recarga {
+    padding: 24px;
+    background: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+}
+
+.recarga-form {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 16px;
+    align-items: end;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.campo label {
+    font-size: 0.85rem;
+    color: var(--color-texto-suave);
+}
+
+.campo input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+    background: var(--color-fondo);
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: var(--color-texto);
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.campo input::placeholder {
+    color: var(--color-texto-suave);
+}
+
+.campo input:focus-visible {
+    outline: 2px solid var(--color-primario);
+    outline-offset: 1px;
+    border-color: var(--color-primario);
+    background: var(--color-superficie);
+}
+
+#btn-recargar {
+    grid-column: 1 / -1;
+    padding: 14px;
+    background: var(--color-primario);
+    color: #fff;
+    border-radius: var(--radio);
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: background 0.2s, transform 0.1s;
+}
+
+#btn-recargar:hover {
+    background: #333;
+}
+
+#btn-recargar:active {
+    transform: scale(0.98);
+}
+
+#btn-recargar:disabled {
+    background: var(--color-borde);
+    color: var(--color-texto-suave);
+    cursor: not-allowed;
+}
+
+.mensaje {
+    min-height: 1.4em;
+    margin-top: 12px;
+    font-size: 0.88rem;
+    color: var(--color-texto-suave);
+}
+
+.mensaje.error {
+    color: var(--color-peligro);
+}
+
+.mensaje.exito {
+    color: #166534;
+}
+
+/* ---------- Historial ---------- */
+#lista-movimientos {
+    background: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+}
+
+#lista-movimientos:empty::before {
+    content: "Aún no tienes movimientos";
+    display: block;
+    padding: 32px 0;
+    text-align: center;
+    font-weight: 300;
+    color: var(--color-texto-suave);
+}
+
+.movimiento {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-borde);
+}
+
+.movimiento:last-child {
+    border-bottom: none;
+}
+
+.movimiento-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.movimiento-info strong {
+    font-size: 0.95rem;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+}
+
+.movimiento-info small {
+    font-size: 0.8rem;
+    color: var(--color-texto-suave);
+}
+
+.movimiento-monto {
+    flex-shrink: 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.movimiento-monto.positivo {
+    color: #166534;
+}
+
+.movimiento-monto.negativo {
+    color: var(--color-peligro);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 600px) {
+    .billetera {
+        padding: 20px 16px 40px;
+    }
+
+    .billetera-saldo {
+        padding: 28px 22px;
+    }
+
+    .recarga-form {
+        grid-template-columns: 1fr;
+    }
+}

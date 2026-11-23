@@ -83,11 +83,25 @@ app.post("/api/ventas", async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) return res.status(401).json({ mensaje: "No autorizado" });
 
+  const conexion = await conexionBD.getConnection();
+
   try {
     const datosUsuario = jwt.verify(token, process.env.JWT_SECRET);
     let subtotal = 0;
     const detallesCalculados = [];
     const { carrito } = req.body;
+
+    const [filasUsuario] = await conexion.query(
+      "SELECT saldo FROM usuarios WHERE id = ?",
+      [datosUsuario.id],
+    );
+
+    if (filasUsuario.length === 0) {
+      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+    }
+
+    const saldoActual = Number(filasUsuario[0].saldo);
+
     const sql =
       "INSERT INTO ventas (usuario_id,total,detalle,fecha) VALUES (?,?,?,NOW( ))";
 
@@ -99,7 +113,7 @@ app.post("/api/ventas", async (req, res) => {
     const idsProductos = carrito.map((item) => item.id);
     const sqlProduct =
       "SELECT id, nombre, precio FROM productos WHERE id IN (?)";
-    const [productosEncontrados] = await conexionBD.query(sqlProduct, [
+    const [productosEncontrados] = await conexion.query(sqlProduct, [
       idsProductos,
     ]);
 
@@ -130,19 +144,44 @@ app.post("/api/ventas", async (req, res) => {
     const iva = subtotal * 0.16;
     const total = subtotal + iva;
 
+    if (saldoActual < total) {
+      return res.status(400).json({ mensaje: "Saldo insuficiente" });
+    }
+
+    await conexion.beginTransaction();
+
+    const sqlActualizarSaldo = await conexion.query(
+      "UPDATE usuarios SET saldo = saldo - ? WHERE id =?",
+      [total, datosUsuario.id],
+    );
+
+    const sqlMovimiento = await conexion.query(
+      'INSERT INTO movimientos (usuario_id, tipo, monto, descripcion, fecha) VALUES(?, "compra", ?,?, NOW())',
+      [datosUsuario.id, -total, "compra"],
+    );
+
     const valores = [
       datosUsuario.id,
       total,
       JSON.stringify(detallesCalculados),
     ];
-    const [fila] = await conexionBD.query(sql, valores);
+    const [fila] = await conexion.query(sql, valores);
+
+    await conexion.commit();
 
     res
       .status(200)
       .json({ mensaje: "Venta registrada con exito", total: total });
   } catch (error) {
+    try {
+      await conexion.rollback();
+    } catch (rollbackError) {
+      console.error("Error al hacer rollback:", rollbackError);
+    }
     console.error("Error al procesar la venta:", error);
-    res.status(403).json({ mensaje: "Token invalido o expirado" });
+    res.status(500).json({ mensaje: "Error interno del servidor" });
+  } finally {
+    conexion.release();
   }
 });
 
@@ -299,6 +338,109 @@ app.get("/api/cliente/mis-compras", async (req, res) => {
   } catch (error) {
     console.error("error al obtener las ordenes ", error);
     res.status(500).json({ mensaje: "Error del servidor" });
+  }
+});
+
+//Billetera del cliente
+app.get("/api/cliente/billetera", async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer "))
+    return res
+      .status(403)
+      .json({ mensaje: "Token no proporcionado o formato inválido" });
+
+  const token = authHeader.split(" ")[1];
+  let datosUsuario;
+  if (!token) return res.status(401).json({ mensaje: "No autorizado" });
+
+  try {
+    datosUsuario = jwt.verify(token, process.env.JWT_SECRET);
+  } catch (error) {
+    return res.status(401).json({ mensaje: "Token inválido o expirado" });
+  }
+
+  try {
+    const usuarioId = datosUsuario.id;
+
+    const sqlSaldo = "SELECT saldo FROM usuarios WHERE id = ?";
+    const sqlMovimientos =
+      "SELECT id, tipo, monto, descripcion, fecha FROM movimientos WHERE usuario_id = ? ORDER BY fecha DESC";
+
+    const [[filasSaldo], [filasMovimientos]] = await Promise.all([
+      conexionBD.query(sqlSaldo, [usuarioId]),
+      conexionBD.query(sqlMovimientos, [usuarioId]),
+    ]);
+
+    if (filasSaldo.length === 0)
+      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+
+    const totalSaldo = Number(filasSaldo[0].saldo ?? 0);
+
+    res.status(200).json({ saldo: totalSaldo, movimientos: filasMovimientos });
+  } catch (error) {
+    console.error("Error al obtener el saldo y movimientos", error);
+    res.status(500).json({ mensaje: "Error interno del servidor" });
+  }
+});
+
+//recargar billetera
+app.post("/api/cliente/recargar", async (req, res) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer "))
+    return res
+      .status(403)
+      .json({ mensaje: "Token no proporcionado o formato inválido" });
+
+  const token = authHeader.split(" ")[1];
+  let datosUsuario;
+
+  try {
+    datosUsuario = jwt.verify(token, process.env.JWT_SECRET);
+  } catch (error) {
+    res.status(401).json({ mensaje: "Token inválido o expirado" });
+  }
+
+  const conexion = await conexionBD.getConnection();
+
+  try {
+    const { monto, descripcion } = req.body;
+    const usuarioId = datosUsuario.id;
+
+    if (!monto || monto <= 0)
+      return res.status(400).json({ mensaje: "monto invalido" });
+
+    await conexion.beginTransaction();
+
+    const sqlSaldo = "UPDATE usuarios SET saldo = saldo + ? WHERE id = ?";
+    const sqlMovimiento =
+      "INSERT INTO movimientos (usuario_id, tipo, monto, descripcion, fecha) VALUES(?,'recarga',?,?,NOW())";
+
+    const [filasSaldo] = await conexion.query(sqlSaldo, [monto, usuarioId]);
+    const [filasMovimientos] = await conexion.query(sqlMovimiento, [
+      usuarioId,
+      monto,
+      descripcion,
+    ]);
+
+    await conexion.commit();
+
+    const [filasNuevoSaldo] = await conexion.query(
+      "SELECT saldo FROM usuarios WHERE id = ?",
+      [usuarioId],
+    );
+    const nuevoSaldo = Number(filasNuevoSaldo[0].saldo);
+
+    res.status(200).json({
+      mensaje: "Recarga Exitosa",
+      nuevoSaldo: nuevoSaldo,
+    });
+  } catch (error) {
+    await conexion.rollback();
+    console.error("error en transaccion de recarga ", error);
+    res.status(500).json({ mensaje: '"Error al procesar la recarga' });
+  } finally {
+    await conexion.release();
   }
 });
 

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mi Billetera</title>
+    <link rel="stylesheet" href="/frontend/css/style.css">
+    <link rel="stylesheet" href="/frontend/css/billetera.css">
+</head>
+<body>
+
+    <header>
+        <h1>Tienda Online</h1>
+        <div class="menu">
+            <button id="menu-toggle" class="menu-toggle" aria-label="Abrir menú" aria-haspopup="true" aria-expanded="false" aria-controls="menu-lista">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+            </button>
+            <div id="menu-lista" class="menu-lista" hidden>
+                <a href="/frontend/index.html">Tienda</a>
+                <a href="/frontend/perfil.html">Perfil</a>
+                <button id="btn-cerrar-sesion">Cerrar sesión</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="billetera">
+        <section class="billetera-saldo">
+            <p class="saldo-etiqueta">Saldo disponible</p>
+            <h2 id="saldo-actual">$0.00</h2>
+        </section>
+
+        <section class="billetera-recarga">
+            <h2>Recargar saldo</h2>
+            <div class="recarga-form">
+                <div class="campo">
+                    <label for="monto-recarga">Monto</label>
+                    <input type="number" id="monto-recarga" min="0.01" step="0.01" placeholder="0.00">
+                </div>
+                <div class="campo">
+                    <label for="descripcion-recarga">Descripción</label>
+                    <input type="text" id="descripcion-recarga" placeholder="Ej: Tarjeta ****1234">
+                </div>
+                <button id="btn-recargar">Recargar Saldo</button>
+            </div>
+            <p id="mensaje-recarga" class="mensaje" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="billetera-movimientos">
+            <h2>Movimientos</h2>
+            <div id="lista-movimientos"></div>
+        </section>
+    </main>
+
+    <script src="/frontend/js/menu.js"></script>
+    <script src="/frontend/js/billetera.js"></script>
+</body>
+</html>
