@@ -228,6 +228,9 @@ btn.addEventListener("click", async function () {
       carrito = [];
       localStorage.setItem("carrito", JSON.stringify(carrito));
       renderizarCarrito();
+    } else {
+      const error = await respuesta.json();
+      alert(error.mensaje);
     }
   } catch (error) {
     console.error("error al procesar venta", error);
