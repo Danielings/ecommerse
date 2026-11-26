@@ -11,6 +11,7 @@ function guardiaSeguridad() {
 const token = localStorage.getItem("token");
 let carrito = [];
 let productos = [];
+let comprando = false;
 
 guardiaSeguridad();
 
@@ -30,6 +31,7 @@ async function cargarProductos() {
     if (respuesta.ok) {
       productos = await respuesta.json();
       renderizarProductos();
+
       cargarCarrito();
     } else {
       console.error("error al obtener los productos");
@@ -111,12 +113,11 @@ gridProductos.addEventListener("click", function (e) {
 
 function renderizarCarrito() {
   gridCarrito.innerHTML = "";
-  let contar = carrito.reduce((contador, item) => {
-    return contador + item.cantidad;
-  }, 0);
 
   let subbTotal = carrito.reduce((acumulador, item) => {
     let producto = productos.find((p) => p.id === item.id);
+
+    if (producto === undefined) return acumulador;
 
     return acumulador + producto.precio * item.cantidad;
   }, 0);
@@ -130,6 +131,9 @@ function renderizarCarrito() {
 
   for (let i = 0; i < carrito.length; i++) {
     let producto = productos.find((item) => item.id === carrito[i].id);
+
+    if (producto === undefined) continue;
+
     let divCarrito = document.createElement("div");
     let name = document.createElement("h4");
     let price = document.createElement("p");
@@ -162,6 +166,15 @@ function renderizarCarrito() {
     divCarrito.appendChild(botonEliminar);
 
     gridCarrito.appendChild(divCarrito);
+  }
+}
+
+function limpiarCarrito() {
+  let longitudOriginal = carrito.length;
+  carrito = carrito.filter((item) => productos.some((p) => p.id === item.id));
+
+  if (carrito.length !== longitudOriginal) {
+    guardarCarrito();
   }
 }
 
@@ -209,10 +222,15 @@ function cargarCarrito() {
     carrito = JSON.parse(carritoGuardado);
   }
 
+  limpiarCarrito();
   renderizarCarrito();
 }
 
 btn.addEventListener("click", async function () {
+  if (comprando) return;
+  comprando = true;
+  btn.disabled = true;
+  btn.textContent = "Procesando....";
   try {
     const respuesta = await fetch("http://localhost:3000/api/ventas", {
       method: "POST",
@@ -234,6 +252,10 @@ btn.addEventListener("click", async function () {
     }
   } catch (error) {
     console.error("error al procesar venta", error);
+  } finally {
+    comprando = false;
+    btn.disabled = false;
+    btn.textContent = "Finalizar Compra";
   }
 });
 
