@@ -12,6 +12,7 @@ const token = localStorage.getItem("token");
 let carrito = [];
 let productos = [];
 let comprando = false;
+let timeOutMensaje = null;
 
 guardiaSeguridad();
 
@@ -24,6 +25,7 @@ let total = document.getElementById("total");
 let categoriaActual = "todos";
 let filtro = document.querySelector(".filtros");
 let btnSesion = document.getElementById("btn-cerrar-sesion");
+let estadoMensaje = document.getElementById("estado-mensajes");
 
 async function cargarProductos() {
   try {
@@ -31,12 +33,26 @@ async function cargarProductos() {
     if (respuesta.ok) {
       productos = await respuesta.json();
       renderizarProductos();
-
       cargarCarrito();
+      limpiarMensaje();
     } else {
-      console.error("error al obtener los productos");
+      const error = await respuesta.json();
+
+      if (productos.length > 0) {
+        renderizarProductos();
+        renderizarCarrito();
+      }
+
+      mostrarMensaje(error.mensaje, "error", 0);
+      console.error("Error de conexión. No se pudieron cargar los productos");
     }
   } catch (error) {
+    if (productos.length > 0) {
+      renderizarProductos();
+      renderizarCarrito();
+    }
+
+    mostrarMensaje("Error al cargar los productos", "error", 0);
     console.error("error de red ", error);
   }
 }
@@ -111,6 +127,10 @@ gridProductos.addEventListener("click", function (e) {
   }
 });
 
+function actualizarEstadoBoton() {
+  btn.disabled = comprando || carrito.length === 0;
+}
+
 function renderizarCarrito() {
   gridCarrito.innerHTML = "";
 
@@ -128,6 +148,8 @@ function renderizarCarrito() {
   subTotal.textContent = subbTotal.toFixed(2);
   iva.textContent = ivas.toFixed(2);
   total.textContent = totales.toFixed(2);
+
+  actualizarEstadoBoton();
 
   for (let i = 0; i < carrito.length; i++) {
     let producto = productos.find((item) => item.id === carrito[i].id);
@@ -226,6 +248,27 @@ function cargarCarrito() {
   renderizarCarrito();
 }
 
+function mostrarMensaje(texto, tipo, duracionMs = 5000) {
+  if (!estadoMensaje) return;
+
+  clearTimeout(timeOutMensaje);
+  estadoMensaje.dataset.tipo = tipo;
+  estadoMensaje.textContent = texto;
+
+  if (duracionMs > 0) {
+    timeOutMensaje = setTimeout(() => {
+      limpiarMensaje();
+    }, duracionMs);
+  }
+}
+
+function limpiarMensaje() {
+  if (!estadoMensaje) return;
+  clearTimeout(timeOutMensaje);
+  estadoMensaje.textContent = "";
+  delete estadoMensaje.dataset.tipo;
+}
+
 btn.addEventListener("click", async function () {
   if (comprando) return;
   comprando = true;
@@ -242,21 +285,31 @@ btn.addEventListener("click", async function () {
     });
 
     if (respuesta.ok) {
-      alert("venta exitosa");
+      mostrarMensaje("Compra exitosa", "exito");
       carrito = [];
       localStorage.setItem("carrito", JSON.stringify(carrito));
       renderizarCarrito();
     } else {
       const error = await respuesta.json();
-      alert(error.mensaje);
+      mostrarMensaje(
+        error.mensaje || "Error al procesar la compra",
+        "error",
+        0,
+      );
     }
   } catch (error) {
     console.error("error al procesar venta", error);
+    mostrarMensaje(
+      "Error de conexión al procesar la compra. Intenta de nuevo",
+      "error",
+      0,
+    );
   } finally {
     comprando = false;
-    btn.disabled = false;
+    actualizarEstadoBoton();
     btn.textContent = "Finalizar Compra";
   }
 });
 
 cargarProductos();
+actualizarEstadoBoton();
